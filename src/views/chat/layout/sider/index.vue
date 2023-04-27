@@ -7,6 +7,7 @@ import Footer from './Footer.vue'
 import { useAppStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
+import codepng from '@/assets/code.png'
 
 const appStore = useAppStore()
 const chatStore = useChatStore()
@@ -80,6 +81,7 @@ watch(
           <List />
         </div>
         <div class="p-4">
+          <img :src="codepng" alt="404"><br>
           <NButton block @click="show = true">
             {{ $t('store.siderButton') }}
           </NButton>

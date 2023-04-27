@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover" />
+    <title>闪电AI工具箱-in登录</title>
+    <style>
+        body {
+            background-color: #333;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .qr-code {
+            display: inline-block;
+            background-color: #fff;
+            padding: 18px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .tip {
+			font-size: 14px;
+			color: #fff;
+            background-color: #232323;
+            width: 270px;
+			margin: 20px auto;
+            padding: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
+            border-radius: 40px;
+		}
+    </style>
+</head>
+
+<body class="dark:bg-black">
+    <h1>微信登录</h1>
+    <div class="qr-code">
+        <div id="qrcode"></div>
+    </div>
+    <div class="tip">请使用微信扫描二维码登录<br/>"闪电AI工具箱"</div>
+</body>
+<script>
+    function ajaxQry() {
+        $.ajax({
+            url: '/api/v1/wechat/user/state',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ uid: sessionStorage.getItem('uid') }),
+            success: function (response) {
+                if (response.AuthorizationSID && response.AuthorizationSID != "NO") {
+                    localStorage.setItem('AuthorizationSID', response.AuthorizationSID);
+                    localStorage.setItem('nickname', response.userInfo.nickname);
+                    localStorage.setItem('headimgurl', response.userInfo.headimgurl);
+                    window.location.href = "/index.html";
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+    // 判断是否为微信客户端
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isWeixin = userAgent.indexOf('micromessenger') !== -1;
+    const sid = localStorage.getItem('AuthorizationSID');
+    if (sid) {
+        window.location.href = "/index.html";
+    }
+    $.ajax({
+        url: '/api/v1/wechat/authUrl',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ "isWeixin": isWeixin }),
+        success: function (response) {
+            sessionStorage.setItem('uid', response.uid);
+            if (isWeixin) {
+                window.location.href = response.url;
+            } else {
+                new QRCode(document.getElementById('qrcode'), response.url);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log('Error:', error);
+        }
+    });
+    // 定时执行查询ajaxQry，每隔1秒执行一次，最多执行10次
+    if (!isWeixin) {
+        let counter = 0
+        let timer = setInterval(function () {
+            if (counter < 100) {
+                ajaxQry()
+                counter++
+            } else {
+                clearInterval(timer)
+            }
+        }, 3000);
+    }
+</script>
+
+</html>

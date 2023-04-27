@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover" />
+    <title>闪电AI工具箱-登录</title>
+</head>
+
+<body class="dark:bg-black">
+    <div id="result"></div>
+</body>
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const code = urlParams.get('code');
+    const uid = urlParams.get('state');
+    const sid = localStorage.getItem('AuthorizationSID');
+    // if (sid) {
+    //     window.location.href = "/index.html";
+    // }
+    $.ajax({
+        url: '/api/v1/wechat/user/login',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ code: code, uid: uid }),
+        success: function (response) {
+            localStorage.setItem('AuthorizationSID', response.AuthorizationSID);
+            // 跳转到首页
+            window.location.href = "/index.html";
+        },
+        error: function (xhr, status, error) {
+            console.log('Error:', error);
+        }
+    });
+</script>
+
+</html>
