@@ -80,7 +80,7 @@ const changeShowModal = (mode: 'add' | 'modify' | 'local_import', selected = { k
 }
 
 // 在线导入相关
-const downloadURL = ref('')
+const downloadURL = ref('/prompts-zh.json')
 const downloadDisabled = computed(() => downloadURL.value.trim().length < 1)
 const setDownloadURL = (url: string) => {
   downloadURL.value = url
