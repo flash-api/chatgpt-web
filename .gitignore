@@ -30,3 +30,10 @@ coverage
 
 # Environment variables files
 /service/.env
+
+/.pnp
+.pnp.js
+.pnp.cjs
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
