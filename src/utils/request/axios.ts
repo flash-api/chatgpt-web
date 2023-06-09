@@ -24,7 +24,7 @@ service.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
     if (response.status === 200) {
       // session超时，返回100错误码，清除sid
-      if (response.data.errorCode && response.data.errorCode == '100') {
+      if (response.data.errorCode && response.data.errorCode === '100') {
         window.localStorage.removeItem('AuthorizationSID')
         window.location.href = '/in.html'
       }
